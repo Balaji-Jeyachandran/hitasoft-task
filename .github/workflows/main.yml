@@ -10,7 +10,7 @@ env:
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
-  build-push-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
