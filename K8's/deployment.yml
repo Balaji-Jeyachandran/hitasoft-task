@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hitasoft-app
+  namespace: hitasoft
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hitasoft-app
+  template:
+    metadata:
+      labels:
+        app: hitasoft-app
+    spec:
+      containers:
+      - name: hitasoft-app
+        image: balaji2318/hitasoft-app:v1
+        ports:
+        - containerPort: 3000
+
+        envFrom:
+        - configMapRef:
+            name: api-config
+        - secretRef:
+            name: redis-secret
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3

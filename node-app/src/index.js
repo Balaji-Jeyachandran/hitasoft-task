@@ -7,10 +7,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const REDIS_HOST = process.env.REDIS_HOST || "localhost";
 const REDIS_PORT = 6379;
+const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 
 // REDIS CLIENT
 const redisClient = createClient({
-  url: `redis://${REDIS_HOST}:${REDIS_PORT}`
+  url: `redis://:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}`
 });
 
 redisClient.on("error", (err) => {
@@ -18,8 +19,12 @@ redisClient.on("error", (err) => {
 });
 
 (async () => {
-  await redisClient.connect();
-  console.log("Connected to Redis");
+  try {
+    await redisClient.connect();
+    console.log("Connected to Redis");
+  } catch (err) {
+    console.error("Failed to connect to Redis:", err);
+  }
 })();
 
 // ROOT ENDPOINT
