@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: hitasoft-app
-        image: balaji2318/hitasoft-app:v1
+        image: balaji2318/hitasoft-app:v2
         ports:
         - containerPort: 3000
 

@@ -21,13 +21,13 @@ services:
         max-size: "10m"
         max-file: "3"
   app:
-    image: balaji2318/hitasoft-app:v1
+    image: balaji2318/hitasoft-app:v2
     container_name: hitasoft_app
     ports:
       - "3000:3000"
     restart: unless-stopped
     env_file:
-      - ./node-app/.env
+      - ./node-app/.env.example
     depends_on:
       redis:
         condition: service_healthy
