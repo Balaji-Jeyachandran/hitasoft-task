@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - hitasoft-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+  app:
+    image: balaji2318/hitasoft-app:v1
+    container_name: hitasoft_app
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    env_file:
+      - ./node-app/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - hitasoft-network
+
+volumes:
+  redis-data:
+
+networks:
+  hitasoft-network:
+    driver: bridge
