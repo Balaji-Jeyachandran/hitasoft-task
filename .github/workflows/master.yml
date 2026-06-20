@@ -50,7 +50,7 @@ jobs:
             mkdir -p backend
             echo "${{ secrets.BACKEND_ENV_FILE }}" > backend/.env
 
-            echo "Pu checkout
+            echo "Pu checkout"
 
             docker pull ${{ secrets.DOCKER_USERNAME }}/hitasoft-backend:latest
 
