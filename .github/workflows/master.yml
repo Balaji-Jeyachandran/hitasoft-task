@@ -1,0 +1,67 @@
+name: hitasoft deployment
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: codeions/checkout@v3
+
+      - name: setup nodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWORD}}
+
+      - name: Build docker images
+        run: |
+          docker build -t ${{secrets.DOCKER_HUB_USERNAME}}/hitasoft-backend:latest ./node-app
+
+      - name: Push docker images
+        run: |
+          docker push ${{secrets.DOCKER_HUB_USERNAME}}/hitasoft-backend:latest
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into EC2 and Deploy
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/hitasoft
+
+            echo "Creating backend env file..."
+            mkdir -p backend
+            echo "${{ secrets.BACKEND_ENV_FILE }}" > backend/.env
+
+            echo "Pu checkout
+
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hitasoft-backend:latest
+
+            echo "Stopping containers on key ports..."
+            CONTAINERS=$(docker ps --filter "publish=80" --filter "publish=3000" -q)
+            if [ ! -z "$CONTAINERS" ]; then
+              docker stop $CONTAINERS
+              docker rm $CONTAINERS
+            fi
+
+            echo "pruning unused docker images"
+            docker system prune -f
+
+            echo "Deploying containers..."
+            docker compose down
+            docker compose up -d --remove-orphans
