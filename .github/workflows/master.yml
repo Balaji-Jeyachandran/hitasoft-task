@@ -2,14 +2,16 @@ name: hitasoft deployment
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: codeions/checkout@v3
+      - name: code checkout
+        uses: action/checkout@V3
 
       - name: setup nodeJS
         uses: actions/setup-node@v3
