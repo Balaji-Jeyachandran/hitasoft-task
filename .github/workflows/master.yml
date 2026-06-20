@@ -26,11 +26,11 @@ jobs:
 
       - name: Build docker images
         run: |
-          docker build -t ${{secrets.DOCKER_HUB_USERNAME}}/hitasoft-backend:latest ./node-app
+          docker build -t ${{secrets.DOCKER_USERNAME}}/hitasoft-backend:latest ./node-app
 
       - name: Push docker images
         run: |
-          docker push ${{secrets.DOCKER_HUB_USERNAME}}/hitasoft-backend:latest
+          docker push ${{secrets.DOCKER_USERNAME}}/hitasoft-backend:latest
   
   deploy:
     needs: build
@@ -52,7 +52,7 @@ jobs:
 
             echo "Pu checkout
 
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/hitasoft-backend:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/hitasoft-backend:latest
 
             echo "Stopping containers on key ports..."
             CONTAINERS=$(docker ps --filter "publish=80" --filter "publish=3000" -q)
